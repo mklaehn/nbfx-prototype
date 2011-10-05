@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>com.drew</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>com.adobe.xmp</package>
+                <package>com.adobe.xmp.impl</package>
+                <package>com.adobe.xmp.impl.xpath</package>
+                <package>com.adobe.xmp.options</package>
+                <package>com.adobe.xmp.properties</package>
+                <package>com.drew.imaging</package>
+                <package>com.drew.imaging.jpeg</package>
+                <package>com.drew.imaging.tiff</package>
+                <package>com.drew.lang</package>
+                <package>com.drew.lang.annotations</package>
+                <package>com.drew.metadata</package>
+                <package>com.drew.metadata.adobe</package>
+                <package>com.drew.metadata.exif</package>
+                <package>com.drew.metadata.icc</package>
+                <package>com.drew.metadata.iptc</package>
+                <package>com.drew.metadata.jfif</package>
+                <package>com.drew.metadata.jpeg</package>
+                <package>com.drew.metadata.photoshop</package>
+                <package>com.drew.metadata.xmp</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/xmpcore.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/xmpcore.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/metadata-extractor-2.5.0-RC2.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/metadata-extractor-2.5.0-RC2.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

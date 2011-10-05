@@ -33,7 +33,7 @@ public final class J1ScheduleReader {
 
                 @Override
                 public void processDataLine(int i, List<String> list) {
-                    schedule.add(new J1Session(new Date(), new Date(), list.get(0), list.get(5)));
+                    schedule.add(new J1Session(list.get(0),new Date(), new Date(), list.get(1), list.get(6)));
                 }
 
                 @Override
@@ -70,12 +70,14 @@ public final class J1ScheduleReader {
     }        
     
     public static class J1Session {
+        private final String id;
         private final Date start;
         private final Date end;
         private final String title;
         private final String location;
 
-        public J1Session(Date start, Date end, String title, String location) {
+        public J1Session(String id, Date start, Date end, String title, String location) {
+            this.id = id;
             this.start = start;
             this.end = end;
             this.title = title;
@@ -96,6 +98,10 @@ public final class J1ScheduleReader {
 
         public String getTitle() {
             return title;
+        }
+        
+        public String getId() {
+            return id;
         }
         
         

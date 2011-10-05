@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import javax.swing.SwingUtilities;
+import org.nbfx.examples.j1schedule.J1ScheduleNode;
 import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -25,7 +26,7 @@ public class MyNode extends AbstractNode {
 
     enum SubEntry {
 
-        EINS, ZWEI, DREI, ISABELLE, YARA
+        ONE, TWO, THREE, FOUR, FIVE, J1SCHEDULE
     }
 
     static class MyChildren extends Children.Keys<SubEntry> {
@@ -42,6 +43,9 @@ public class MyNode extends AbstractNode {
 
         @Override
         final protected Node[] createNodes(final SubEntry key) {
+            if (key == SubEntry.J1SCHEDULE) {
+                return new Node[]{new J1ScheduleNode()};
+            }
             return new Node[]{new MySubNode(key.name())};
         }
     }

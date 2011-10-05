@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See harness/README in the NetBeans platform -->
+<!-- for some information on what you could do (e.g. targets to override). -->
+<!-- If you delete this file and reopen the project it will be recreated. -->
+<project name="javafx" default="netbeans" basedir=".">
+    <description>Builds, tests, and runs the project javafx.</description>
+     <property name="javafx20.home" value="C:\Program Files\Oracle\JavaFX 2.0 SDK\rt" /> 
+     
+    <import file="nbproject/build-impl.xml"/>
+    
+    <target name="-pre-compile" depends="init, up-to-date">    
+        <copy toDir="./release/modules/ext/bin">
+            <fileset dir="${javafx20.home}/bin">
+                <include name="*"/>
+            </fileset>
+        </copy>
+        <copy toDir="./release/modules/ext/lib">
+            <fileset dir="${javafx20.home}/lib">
+                <include name="*"/>
+            </fileset>
+        </copy>        
+    </target>
+    
+    <target name="compile" depends="-pre-compile, projectized-common.compile" />
+</project>

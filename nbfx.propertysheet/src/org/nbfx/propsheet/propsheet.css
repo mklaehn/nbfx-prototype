@@ -1,0 +1,48 @@
+.split-pane {
+    -fx-background-insets: 0,0;
+    -fx-padding: 0;
+}
+.scroll-pane {
+    -fx-background-color: #d1dee3;
+    -fx-background-insets: 0,0;
+    -fx-padding: 0;
+}
+.tree-view {
+    -fx-background-color: #d1dee3;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-effect: innershadow( one-pass-box , rgba(0,0,0,0.1) , 20, 0.0 , 0 , 0 );
+}
+.tree-cell {
+    -fx-indent: 10;
+    -fx-background-color: transparent;
+}
+.tree-cell:odd {
+    -fx-background-color: transparent;
+}
+.tree-cell:filled:selected:focused, .tree-cell:filled:selected {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+.category-label {
+    -fx-font: bold 14px "Amble Cn";
+}
+.property-sheet {
+    -fx-background: #d1dee3;
+    -fx-base: #d1dee3;
+}
+.property-sheet-header {
+    -fx-font: 16px AmbleCn;
+    -fx-background-color: linear (0%,100%) to (0%,0%)
+                            stops (4%,#e2f1f6)
+                                  (6%,#b2bdc1)
+                                  (8%,#b2bdc1)
+                                  (10%,#c0ccd1)
+                                  (91%,#dfedf2)
+                                  (93%,white)
+                                  (95%,white)
+                                  (97%,#bec9ce);
+    -fx-padding: 2 2 2 6;
+}

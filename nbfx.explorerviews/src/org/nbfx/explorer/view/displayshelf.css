@@ -1,0 +1,19 @@
+.displayshelf {
+    -fx-base: #202020;
+    -fx-background: #202020;
+    -fx-background-color: linear (0%,0%) to (0%,100%) stops
+                (60%,black)
+                (60.1%,#141414)
+                (100%,black);
+
+}
+.displayshelf .scroll-bar {
+    -fx-background-radius: 7, 6;
+}
+
+.displayshelf .scroll-bar .increment-button {
+    -fx-padding: 3 3 3 10;
+}
+.displayshelf .scroll-bar .decrement-button {
+    -fx-padding: 3 10 3 3;
+}

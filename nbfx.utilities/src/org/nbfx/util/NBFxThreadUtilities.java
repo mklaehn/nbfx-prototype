@@ -57,7 +57,7 @@ public enum NBFxThreadUtilities {
 
         private final NBFxThreadUtilities fu;
         private final Runnable runnable;
-        private final Throwable throwable = new Exception();
+        private final Throwable throwable = null;//new Exception();
 
         public RunnableExecutor(final NBFxThreadUtilities fu, final Runnable runnable) {
             this.fu = fu;

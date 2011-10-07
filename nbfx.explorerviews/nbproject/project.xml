@@ -68,6 +68,7 @@
                 <package>org.nbfx.explorer.view</package>
                 <package>org.nbfx.explorer.view.icon</package>
                 <package>org.nbfx.explorer.view.list</package>
+                <package>org.nbfx.explorer.view.table</package>
                 <package>org.nbfx.explorer.view.tree</package>
             </public-packages>
         </data>

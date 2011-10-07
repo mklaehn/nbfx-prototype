@@ -128,10 +128,6 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
         private final NodeWrapper nodeWrapper;
         private final ImageView imageView = new ImageView();
 
-        public TreeNodeItem(final Node node) {
-            this(new NodeWrapper(node));
-        }
-
         public TreeNodeItem(final NodeWrapper nodeWrapper) {
             super(nodeWrapper.getValue());
             NBFxThreadUtilities.FX.ensureThread();
@@ -139,6 +135,19 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
             this.nodeWrapper = nodeWrapper;
 
             setGraphic(imageView);
+
+            // children
+            nodeWrapper.childNodes().addListener(new ListChangeListener<Node>() {
+
+                @Override
+                public void onChanged(final ListChangeListener.Change<? extends Node> change) {
+                    NBFxThreadUtilities.FX.ensureThread();
+
+                    if (isExpanded() || isLeaf()) {
+                        TreeNodeItem.this.getChildren().setAll(treeNodeItemConverter.getConverted(change.getList()));
+                    }
+                }
+            });
 
             // expanded && image
             expandedProperty().addListener(new ChangeListener<Boolean>() {
@@ -154,19 +163,7 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
 
             updateIcon(isExpanded());
 
-            // children & leaf
-            nodeWrapper.childNodes().addListener(new ListChangeListener<Node>() {
-
-                @Override
-                public void onChanged(final ListChangeListener.Change<? extends Node> change) {
-                    NBFxThreadUtilities.FX.ensureThread();
-
-                    if (isExpanded() || isLeaf()) {
-                        TreeNodeItem.this.getChildren().setAll(treeNodeItemConverter.getConverted(change.getList()));
-                    }
-                }
-            });
-
+            // leaf
             if (!getValue().isLeaf()) {
                 getChildren().setAll(Collections.singleton(new TreeNodeItem(WAIT_NODE_WRAPPER)));
             }

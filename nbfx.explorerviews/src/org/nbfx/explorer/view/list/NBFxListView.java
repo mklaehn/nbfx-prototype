@@ -80,7 +80,6 @@ public class NBFxListView extends NodeView<NodeWrapper> {
             }
         };
 
-
         listView.selectionModelProperty().addListener(selModelListener);
         selModelListener.changed(null, null, listView.getSelectionModel());
 

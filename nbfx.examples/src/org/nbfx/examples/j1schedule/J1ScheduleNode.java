@@ -1,20 +1,13 @@
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
 package org.nbfx.examples.j1schedule;
 
-import java.awt.Image;
 import java.lang.reflect.InvocationTargetException;
 import org.nbfx.examples.j1schedule.J1ScheduleReader.J1Session;
-import org.nbfx.examples.node.MyNode;
-import org.openide.nodes.*;
-import org.openide.util.ImageUtilities;
+import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Children;
+import org.openide.nodes.Node;
+import org.openide.nodes.PropertySupport;
+import org.openide.nodes.Sheet;
 
-/**
- *
- * @author Administrator
- */
 public class J1ScheduleNode extends AbstractNode {
 
     public J1ScheduleNode() {
@@ -23,12 +16,11 @@ public class J1ScheduleNode extends AbstractNode {
         this.setIconBaseWithExtension("org/nbfx/examples/j1schedule/javaone.jpg");
     }
 
-    @Override
-    public Image getOpenedIcon(int type) {
-        return ImageUtilities.loadImage("org/nbfx/examples/j1schedule/javaone_opened.jpg");
-    }
-
     private static class J1SessionChildren extends Children.Keys<J1Session> {
+
+        public J1SessionChildren() {
+            super(true);
+        }
 
         @Override
         protected void addNotify() {

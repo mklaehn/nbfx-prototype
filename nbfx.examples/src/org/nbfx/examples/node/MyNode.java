@@ -14,7 +14,6 @@ import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
-import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
 
 public class MyNode extends AbstractNode {
@@ -93,12 +92,6 @@ public class MyNode extends AbstractNode {
 
         @Override
         protected Node[] createNodes(Integer t) {
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-
             return new Node[]{new HexNode(t)};
         }
     }
@@ -123,7 +116,7 @@ public class MyNode extends AbstractNode {
                         NBFxThreadUtilities.SWING.runLater(this);
                     }
                 }
-            }, nr * 1000);
+            }, nr * 1500);
             System.out.println(Arrays.toString(getActions(true)));
             System.out.println(Arrays.toString(getActions(false)));
         }

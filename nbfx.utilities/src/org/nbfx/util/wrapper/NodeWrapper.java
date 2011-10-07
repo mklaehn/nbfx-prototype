@@ -2,10 +2,15 @@ package org.nbfx.util.wrapper;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
@@ -14,8 +19,10 @@ import javafx.scene.image.Image;
 import org.nbfx.util.NBFxActionUtilities;
 import org.nbfx.util.NBFxImageUtilities;
 import org.nbfx.util.NBFxThreadUtilities;
-import org.nbfx.util.ObjectConverter;
+import org.nbfx.util.property.NBFxNodeProperty;
+import org.nbfx.util.property.NBFxNodePropertyUtility;
 import org.openide.nodes.Node;
+import org.openide.nodes.Node.PropertySet;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -101,8 +108,8 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     }
 
     public final ObjectProperty<Image> nodeIconOpenedProperty() {
-        return nodeIconOpenedProperty;
-    }
+        return nodeIconOpenedProperty; 
+   }
 
     public final ObjectProperty<Image> nodeIconProperty() {
         return nodeIconProperty;
@@ -113,25 +120,21 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     }
 
     public final void addNotify() {
-        if (!Boolean.TRUE.equals(getValue().getValue("NodeWrapper.isExpanded"))) {
-            getValue().setValue("NodeWrapper.isExpanded", Boolean.TRUE);
+        RP.post(new Runnable() {
 
-            RP.post(new Runnable() {
+            @Override
+            public void run() {
+                final Node[] nodes = getValue().getChildren().getNodes();
 
-                @Override
-                public void run() {
-                    final Node[] nodes = getValue().getChildren().getNodes(true);
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
 
-                    NBFxThreadUtilities.FX.runLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            childNodes.addAll(nodes);
-                        }
-                    });
-                }
-            });
-        }
+                    @Override
+                    public void run() {
+                        childNodes.setAll(nodes);
+                    }
+                });
+            }
+        });
     }
 
     public ReadOnlyObjectProperty<ContextMenu> contextMenuProperty() {
@@ -152,13 +155,59 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
         });
     }
 
-    public static final class NodeWrapperConverter extends ObjectConverter<Node, NodeWrapper> {
+    public Map<String, List<NBFxNodeProperty<?>>> getNodeProperties() {
+        return getNodeProperties((null == getValue())
+                ? null
+                : getValue().getPropertySets());
+    }
 
-        @Override
-        protected NodeWrapper convert(Node input) {
-            return (null == input)
-                    ? null
-                    : new NodeWrapper(input);
+    public static Map<String, List<NBFxNodeProperty<?>>> getNodeProperties(final PropertySet[] propertySets) {
+        if ((null == propertySets) || (0 == propertySets.length)) {
+            return Collections.<String, List<NBFxNodeProperty<?>>>emptyMap();
         }
+
+        final Map<String, List<NBFxNodeProperty<?>>> groups = new LinkedHashMap<String, List<NBFxNodeProperty<?>>>();
+
+        for (final Node.PropertySet propertySet : propertySets) {
+            final List<NBFxNodeProperty<?>> properties = new ArrayList<NBFxNodeProperty<?>>(propertySet.getProperties().length);
+
+            for (org.openide.nodes.Node.Property<?> nodeProperty : propertySet.getProperties()) {
+                properties.add(NBFxNodePropertyUtility.createNBFxNodeProperty(nodeProperty));
+            }
+
+            groups.put(propertySet.getDisplayName(), properties);
+        }
+
+        return groups;
+    }
+
+    public static <D> ObservableValue<D> getValue(final NodeWrapper nodeWrapper, final String name, final Class<D> dataClass) {
+        return getValue((null == nodeWrapper) ? null : nodeWrapper.getValue(), name, dataClass);
+    }
+
+    public static <D> ObservableValue<D> getValue(final Node node, final String name, final Class<D> dataClass) {
+        return getValue((null == node) ? null : node.getPropertySets(), name, dataClass);
+    }
+
+    public static <D> ObservableValue<D> getValue(final PropertySet[] propertySets, final String name, final Class<D> dataClass) {
+        if ((null == propertySets) || (0 == propertySets.length)) {
+            return null;
+        }
+
+        for (final PropertySet propertySet : propertySets) {
+            if ((null == propertySet) || (0 == propertySet.getProperties().length)) {
+                continue;
+            }
+
+            for (final Node.Property<?> property : propertySet.getProperties()) {
+                if (name.equals(property.getName()) && dataClass.isAssignableFrom(property.getValueType())) {
+                    @SuppressWarnings("unchecked")
+                    final ObservableValue<D> ov = (ObservableValue<D>) NBFxNodePropertyUtility.createNBFxNodeProperty(property);
+                    return ov;
+                }
+            }
+        }
+
+        return null;
     }
 }

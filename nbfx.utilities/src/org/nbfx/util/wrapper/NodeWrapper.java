@@ -2,11 +2,8 @@ package org.nbfx.util.wrapper;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.beans.PropertyChangeListener;
+import java.util.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,14 +16,11 @@ import javafx.scene.image.Image;
 import org.nbfx.util.NBFxActionUtilities;
 import org.nbfx.util.NBFxImageUtilities;
 import org.nbfx.util.NBFxThreadUtilities;
+import org.nbfx.util.ParametrizedPCL;
 import org.nbfx.util.property.NBFxNodeProperty;
 import org.nbfx.util.property.NBFxNodePropertyUtility;
-import org.openide.nodes.Node;
 import org.openide.nodes.Node.PropertySet;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
+import org.openide.nodes.*;
 import org.openide.util.RequestProcessor;
 
 public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
@@ -41,6 +35,55 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     public NodeWrapper(final Node node) {
         super(node);
         NBFxThreadUtilities.FX.ensureThread();
+
+        final ParametrizedPCL ppcl = new ParametrizedPCL();
+
+        ppcl.addPropertyChangeListener(Node.PROP_DISPLAY_NAME, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                displayNameProperty().set(node.getDisplayName());
+            }
+        });
+        ppcl.addPropertyChangeListener(Node.PROP_NAME, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                nameProperty().set(node.getName());
+            }
+        });
+        ppcl.addPropertyChangeListener(Node.PROP_SHORT_DESCRIPTION, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                shortDescriptionProperty().set(node.getShortDescription());
+            }
+        });
+        ppcl.addPropertyChangeListener(Node.PROP_ICON, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                nodeIconProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
+                        ? getValue().getIcon(ICON_KEY)
+                        : pce.getNewValue()));
+            }
+        });
+        ppcl.addPropertyChangeListener(Node.PROP_LEAF, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                childNodes.setAll(Collections.<Node>emptyList());
+            }
+        });
+        ppcl.addPropertyChangeListener(Node.PROP_OPENED_ICON, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final PropertyChangeEvent pce) {
+                nodeIconOpenedProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
+                        ? getValue().getOpenedIcon(ICON_KEY)
+                        : pce.getNewValue()));
+            }
+        });
 
         node.addNodeListener(new NodeListener() {
 
@@ -71,33 +114,7 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
             public void propertyChange(final PropertyChangeEvent pce) {
                 NBFxThreadUtilities.SWING.ensureThread();
 
-                switch (pce.getPropertyName()) {
-                    case Node.PROP_DISPLAY_NAME:
-                        displayNameProperty().set(node.getDisplayName());
-                        break;
-                    case Node.PROP_NAME:
-                        nameProperty().set(node.getName());
-                        break;
-                    case Node.PROP_SHORT_DESCRIPTION:
-                        shortDescriptionProperty().set(node.getShortDescription());
-                        break;
-                    case Node.PROP_ICON:
-                        nodeIconProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
-                                ? getValue().getIcon(ICON_KEY)
-                                : pce.getNewValue()));
-                        break;
-                    case Node.PROP_LEAF:
-                        childNodes.setAll(Collections.<Node>emptyList());
-                        break;
-                    case Node.PROP_OPENED_ICON:
-                        nodeIconOpenedProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
-                                ? getValue().getOpenedIcon(ICON_KEY)
-                                : pce.getNewValue()));
-                        //                } else if (Node.PROP_PROPERTY_SETS.equals(evt.getPropertyName())) {
-                        //                        displayNameProperty().set(node.getDisplayName());
-                        break;
-                }
-
+                ppcl.propertyChange(pce);
                 updateContextMenu();
             }
         });
@@ -108,8 +125,8 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     }
 
     public final ObjectProperty<Image> nodeIconOpenedProperty() {
-        return nodeIconOpenedProperty; 
-   }
+        return nodeIconOpenedProperty;
+    }
 
     public final ObjectProperty<Image> nodeIconProperty() {
         return nodeIconProperty;

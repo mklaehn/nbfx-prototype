@@ -37,7 +37,11 @@ public final class J1ScheduleReader {
                     return true;
                 }
             });
-        } catch (ProcessingException | ParseException | IOException ex) {
+        } catch (final ProcessingException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (final ParseException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (final IOException ex) {
             Exceptions.printStackTrace(ex);
         }
         return schedule;

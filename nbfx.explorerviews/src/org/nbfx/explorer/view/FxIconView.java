@@ -13,16 +13,19 @@ import java.util.List;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFieldBuilder;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderPaneBuilder;
 import javax.swing.JPanel;
+import org.nbfx.util.NBFxPanelCreator;
 import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.Parameters;
 
 /**
  * @author Sven
@@ -34,67 +37,19 @@ final public class FxIconView extends JPanel implements PropertyChangeListener {
 
     public FxIconView() {
         super(new BorderLayout());
-        NBFxThreadUtilities.FX.runLater(new Runnable() {
+        NBFxThreadUtilities.SWING.ensureThread();
 
-            private final BorderPane borderPane = new BorderPane();
+        final TextField input = TextFieldBuilder.create().
+                promptText("<put your folder here>").
+                build();
+        final BorderPane borderPane = BorderPaneBuilder.create().
+                top(input).
+                build();
+        final JFXPanel panel = NBFxPanelCreator.create(borderPane);
 
-            @Override
-            public void run() {
-                NBFxThreadUtilities.FX.ensureThread();
-
-                final JFXPanel panel = new JFXPanel();
-                final TextField input = new TextField();
-
-                panel.setScene(new Scene(borderPane));
-                panel.getScene().getStylesheets().add("/org/nbfx/explorer/view/displayshelf.css");
-                input.setPromptText("<put your folder here>");
-                borderPane.setTop(input);
-
-                NBFxThreadUtilities.SWING.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        FxIconView.this.add(panel, BorderLayout.CENTER);
-                    }
-                });
-
-                input.setOnAction(new EventHandler<ActionEvent>() {
-
-                    public void setImages(final URL... images) {
-                        NBFxThreadUtilities.FX.ensureThread();
-
-                        borderPane.getChildren().remove(shelf);
-                        shelf = new DisplayShelf(images);
-                        shelf.addListener(FxIconView.this);
-                        borderPane.centerProperty().set(shelf);
-                        pcs.firePropertyChange("ROOT", null, shelf.getShelfRootNode());
-                    }
-
-                    @Override
-                    public void handle(final ActionEvent event) {
-                        final List<URL> images = new ArrayList<URL>();
-
-                        for (final File file : new File(input.getText()).listFiles(new FilenameFilter() {
-
-                            @Override
-                            public boolean accept(final File dir, final String name) {
-                                final String n = name.toLowerCase();
-                                return n.endsWith(".jpg") || n.endsWith(".jpeg") || n.endsWith(".png");
-                            }
-                        })) {
-                            try {
-                                images.add(file.toURI().toURL());
-                            } catch (final MalformedURLException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
-                        }
-
-                        setImages(images.toArray(new URL[images.size()]));
-                        borderPane.bottomProperty().set(new Label(new File(input.getText()).getAbsolutePath()));
-                    }
-                });
-            }
-        });
+        add(panel, BorderLayout.CENTER);
+        panel.getScene().getStylesheets().add("/org/nbfx/explorer/view/displayshelf.css");
+        input.setOnAction(new InputHandler(this, borderPane, input));
     }
 
     @Override
@@ -104,7 +59,7 @@ final public class FxIconView extends JPanel implements PropertyChangeListener {
     }
 
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    public void addPropertyChangeListener(final PropertyChangeListener pcl) {
         pcs.addPropertyChangeListener(pcl);
     }
 
@@ -112,7 +67,59 @@ final public class FxIconView extends JPanel implements PropertyChangeListener {
         if (null != shelf) {
             return shelf.getSelectedNode();
         }
-        
+
         return new AbstractNode(Children.LEAF);
+    }
+
+    private static class InputHandler implements EventHandler<ActionEvent> {
+
+        private final FxIconView view;
+        private final TextField input;
+        private final BorderPane borderPane;
+
+        public InputHandler(final FxIconView view, final BorderPane borderPane, final TextField input) {
+            Parameters.notNull("view", view);
+            Parameters.notNull("borderPane", borderPane);
+            Parameters.notNull("input", input);
+            this.view = view;
+            this.borderPane = borderPane;
+            this.input = input;
+        }
+
+        private void setImages(final URL... images) {
+            NBFxThreadUtilities.FX.ensureThread();
+
+            borderPane.getChildren().remove(view.shelf);
+            view.shelf = new DisplayShelf(images);
+            view.shelf.addListener(view);
+            borderPane.centerProperty().set(view.shelf);
+            view.pcs.firePropertyChange("ROOT", null, view.shelf.getShelfRootNode());
+        }
+
+        @Override
+        public void handle(final ActionEvent event) {
+            final List<URL> images = new ArrayList<URL>();
+            final File[] files = new File(input.getText()).listFiles(new FilenameFilter() {
+
+                @Override
+                public boolean accept(final File dir, final String name) {
+                    final String n = name.toLowerCase();
+                    return n.endsWith(".jpg") || n.endsWith(".jpeg") || n.endsWith(".png");
+                }
+            });
+
+            if (null != files) {
+                for (final File file : files) {
+                    try {
+                        images.add(file.toURI().toURL());
+                    } catch (final MalformedURLException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+
+            setImages(images.toArray(new URL[images.size()]));
+            borderPane.bottomProperty().set(new Label(new File(input.getText()).getAbsolutePath()));
+        }
     }
 }

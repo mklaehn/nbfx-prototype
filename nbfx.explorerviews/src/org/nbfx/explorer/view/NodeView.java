@@ -24,7 +24,7 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
     private final EMListener<T> emListener = new EMListener<T>(this);
     private ExplorerManager explorerManager = null;
     private Callback<NodeWrapper, T> representationFactory = null;
-    private final ObjectProperty<T> rootNodeProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<T> rootNodeProperty = new SimpleObjectProperty<T>(null);
     private final ChangeListener<T> selectionListener = new ChangeListener<T>() {
 
         @Override
@@ -100,7 +100,7 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
             return Collections.<T>emptyList();
         }
 
-        final List<T> result = new ArrayList<>(nodes.length);
+        final List<T> result = new ArrayList<T>(nodes.length);
 
         for (final Node node : nodes) {
             final T t = getRepresentation(new NodeWrapper(node));
@@ -118,7 +118,7 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
             return Collections.<T>emptyList();
         }
 
-        final List<T> result = new ArrayList<>(nodeWrappers.length);
+        final List<T> result = new ArrayList<T>(nodeWrappers.length);
 
         for (final NodeWrapper nodeWrapper : nodeWrappers) {
             final T t = getRepresentation(nodeWrapper);

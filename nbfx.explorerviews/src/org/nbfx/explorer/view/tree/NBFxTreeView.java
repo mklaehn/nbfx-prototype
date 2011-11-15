@@ -27,7 +27,7 @@ import org.openide.util.NbBundle;
 
 public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
 
-    private final TreeView<Node> treeView = new TreeView<>();
+    private final TreeView<Node> treeView = new TreeView<Node>();
 
     public NBFxTreeView() {
         setCenter(treeView);

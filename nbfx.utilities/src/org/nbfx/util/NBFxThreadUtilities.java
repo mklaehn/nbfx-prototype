@@ -1,8 +1,10 @@
 package org.nbfx.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javax.swing.SwingUtilities;
 import org.openide.util.Parameters;
 
@@ -28,6 +30,8 @@ public enum NBFxThreadUtilities {
     },
     FX {
 
+        private final AtomicBoolean ab = new AtomicBoolean(true);
+
         @Override
         public void ensureThread() {
             if (!Platform.isFxApplicationThread()) {
@@ -38,7 +42,21 @@ public enum NBFxThreadUtilities {
         @Override
         public void runLater(final Runnable runnable) {
             Parameters.notNull("runnable", runnable);
-            Platform.runLater(new RunnableExecutor(this, runnable));
+            synchronized (FX) {
+                if (ab.compareAndSet(true, false)) {
+                    new Thread() {
+
+                        @Override
+                        public void run() {
+                            new JFXPanel();
+                            System.out.println("initiated");
+                            Platform.runLater(new RunnableExecutor(FX, runnable));
+                        }
+                    }.start();
+                } else {
+                    Platform.runLater(new RunnableExecutor(this, runnable));
+                }
+            }
         }
     };
     private static final Logger LOG = Logger.getLogger(NBFxThreadUtilities.class.getName());

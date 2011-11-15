@@ -1,11 +1,9 @@
 package org.nbfx.explorer.view.table;
 
 import java.awt.BorderLayout;
-import javafx.embed.swing.JFXPanelBuilder;
-import javafx.scene.SceneBuilder;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.nbfx.explorer.view.table.NBFxTableView.TableColumnDefinition;
+import org.nbfx.util.NBFxPanelCreator;
 import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.explorer.ExplorerManager;
 
@@ -15,28 +13,17 @@ public class NBFxTableViewComponent extends JPanel {
 
     public NBFxTableViewComponent() {
         super(new BorderLayout());
+        add(NBFxPanelCreator.create(view), BorderLayout.CENTER);
+    }
 
+    public void setColumns(final TableColumnDefinition<?>... tcds) {
         NBFxThreadUtilities.FX.runLater(new Runnable() {
 
             @Override
             public void run() {
-                final JComponent component = JFXPanelBuilder.create().
-                        scene(SceneBuilder.create().root(view).build()).
-                        build();
-
-                NBFxThreadUtilities.SWING.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        NBFxTableViewComponent.this.add(component, BorderLayout.CENTER);
-                    }
-                });
+                view.setColumns(tcds);
             }
         });
-    }
-
-    public void setColumns(final TableColumnDefinition<?>... tcds) {
-        view.setColumns(tcds);
     }
 
     public final void setTableMenuButtonVisible(final boolean visible) {

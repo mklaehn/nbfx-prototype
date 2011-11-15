@@ -11,13 +11,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
 import org.nbfx.explorer.view.NodeView;
+import org.nbfx.util.NBFxThreadUtilities;
 import org.nbfx.util.wrapper.NodeWrapper;
 import org.openide.nodes.Node;
 import org.openide.util.Parameters;
 
 public class NBFxTableView extends NodeView<NodeWrapper> {
 
-    private final TableView<NodeWrapper> tableView = new TableView<>();
+    private final TableView<NodeWrapper> tableView = new TableView<NodeWrapper>();
 
     public NBFxTableView() {
         setCenter(tableView);
@@ -73,7 +74,8 @@ public class NBFxTableView extends NodeView<NodeWrapper> {
     }
 
     public void setColumns(final TableColumnDefinition<?>... tcds) {
-        final List<TableColumnDefinition<?>> defs = new ArrayList<>();
+        NBFxThreadUtilities.FX.ensureThread();
+        final List<TableColumnDefinition<?>> defs = new ArrayList<TableColumnDefinition<?>>();
         boolean hasNodeColumn = false;
 
         if ((null != tcds) && (0 != tcds.length)) {

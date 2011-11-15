@@ -43,14 +43,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.Format;
-import javafx.beans.Observable;
-import javafx.event.EventHandler;
+import java.util.concurrent.atomic.AtomicReference;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.input.KeyCode;
@@ -59,11 +60,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
 import org.nbfx.util.NBFxThreadUtilities;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
-import org.openide.nodes.PropertySupport;
-import org.openide.nodes.Sheet;
+import org.openide.nodes.*;
 import org.openide.util.Exceptions;
 
 public final class DisplayShelf extends Region {
@@ -294,44 +291,62 @@ public final class DisplayShelf extends Region {
 
     private static class ExifNode extends AbstractNode {
 
-        Metadata metaData;
+        private File file;
+        private final AtomicReference<Sheet> sheetRef = new AtomicReference<Sheet>(null);
 
         public ExifNode(final String filename) {
             super(Children.LEAF);
             try {
-                metaData = ImageMetadataReader.readMetadata(new File(new URL(filename).toURI()));
-            } catch (URISyntaxException | ImageProcessingException | IOException ex) {
+                this.file = new File(new URL(filename).toURI());
+            } catch (final URISyntaxException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (final IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
 
         @Override
         protected Sheet createSheet() {
-            final Sheet sheet = Sheet.createDefault();
+            if (null == sheetRef.get()) {
+                final Sheet sheet = Sheet.createDefault();
 
-            for (final Directory directory : metaData.getDirectories()) {
-                final Sheet.Set directorySet = new Sheet.Set();
-
-                directorySet.setName(directory.getName());
-
-                for (final Tag tag : directory.getTags()) {
-                    directorySet.put(new PropertySupport.ReadOnly<String>(
-                            tag.getTagName(),
-                            String.class,
-                            tag.getTagName(),
-                            tag.getTagName()) {
-
-                        @Override
-                        public String getValue() throws IllegalAccessException, InvocationTargetException {
-                            return tag.getDescription();
-                        }
-                    });
+                final Metadata metaData;
+                try {
+                    metaData = ImageMetadataReader.readMetadata(file);
+                } catch (ImageProcessingException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return null;
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return null;
                 }
 
-                sheet.put(directorySet);
+                for (final Directory directory : metaData.getDirectories()) {
+                    final Sheet.Set directorySet = new Sheet.Set();
+
+                    directorySet.setName(directory.getName());
+
+                    for (final Tag tag : directory.getTags()) {
+                        directorySet.put(new PropertySupport.ReadOnly<String>(
+                                tag.getTagName(),
+                                String.class,
+                                tag.getTagName(),
+                                tag.getTagName()) {
+
+                            @Override
+                            public String getValue() throws IllegalAccessException, InvocationTargetException {
+                                return tag.getDescription();
+                            }
+                        });
+                    }
+
+                    sheet.put(directorySet);
+                }
+
+                sheetRef.set(sheet);
             }
 
-            return sheet;
+            return sheetRef.get();
         }
     }
 }

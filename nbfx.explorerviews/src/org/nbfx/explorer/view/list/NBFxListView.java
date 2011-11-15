@@ -17,7 +17,7 @@ import org.openide.nodes.Node;
 
 public class NBFxListView extends NodeView<NodeWrapper> {
 
-    private final ListView<NodeWrapper> listView = new ListView<>();
+    private final ListView<NodeWrapper> listView = new ListView<NodeWrapper>();
 
     public NBFxListView() {
         setCenter(listView);

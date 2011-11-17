@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.nbfx.browser
+OpenIDE-Module-Localizing-Bundle: org/nbfx/browser/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Layer: org/nbfx/browser/layer.xml

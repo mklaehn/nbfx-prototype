@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.nbfx.nodes
+OpenIDE-Module-Localizing-Bundle: org/nbfx/nodes/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

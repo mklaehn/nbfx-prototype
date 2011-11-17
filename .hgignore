@@ -1,1 +1,2 @@
-^libs.jfxrt/release/modules/ext/.*
+syntax: glob
+platform/libs.jfxrt/release

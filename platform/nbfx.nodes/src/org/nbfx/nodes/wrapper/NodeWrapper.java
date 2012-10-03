@@ -21,14 +21,20 @@ package org.nbfx.nodes.wrapper;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.stage.WindowEvent;
 import org.nbfx.actions.ContextMenuItemsUtility;
 import org.nbfx.core.util.NBFxImageUtilities;
 import org.nbfx.core.util.NBFxUtilities;
@@ -61,6 +67,55 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
 
             if (null == cm) {
                 cm = new ContextMenu();
+                cm.setOnAction(new EventHandler<ActionEvent>() {
+
+                    @Override
+                    public void handle(final ActionEvent t) {
+                        System.out.println("setOnAction");
+                    }
+                });
+                cm.setOnAutoHide(new EventHandler<Event>() {
+
+                    @Override
+                    public void handle(final Event t) {
+                        System.out.println("setOnAutoHide");
+                    }
+                });
+                cm.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+                    @Override
+                    public void handle(final WindowEvent t) {
+                        System.out.println("setOnCloseRequest");
+                    }
+                });
+                cm.setOnHidden(new EventHandler<WindowEvent>() {
+
+                    @Override
+                    public void handle(final WindowEvent t) {
+                        System.out.println("setOnHidden");
+                    }
+                });
+                cm.setOnHiding(new EventHandler<WindowEvent>() {
+
+                    @Override
+                    public void handle(final WindowEvent t) {
+                        System.out.println("setOnHiding");
+                    }
+                });
+                cm.setOnShowing(new EventHandler<WindowEvent>() {
+
+                    @Override
+                    public void handle(final WindowEvent t) {
+                        System.out.println("setOnShowing");
+                    }
+                });
+                cm.setOnShown(new EventHandler<WindowEvent>() {
+
+                    @Override
+                    public void handle(final WindowEvent t) {
+                        System.out.println("setOnShown");
+                    }
+                });
                 setValue(cm);
             }
 
@@ -70,10 +125,13 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
         }
 
         private void updateContextMenu() {
-//            final ContextMenu cm = super.getValue();
-            
+            final ContextMenu cm = super.getValue();
+
+            cm.getItems().setAll(
+                    new MenuItem(Integer.toString(AI.getAndIncrement())));
         }
     };
+    private static final AtomicInteger AI = new AtomicInteger(0);
     private final ObservableList<Node> childNodes = FXCollections.<Node>observableArrayList();
 
     public NodeWrapper(final Node node) {

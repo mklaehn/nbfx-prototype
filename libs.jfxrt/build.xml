@@ -4,7 +4,8 @@
 <!-- If you delete this file and reopen the project it will be recreated. -->
 <project name="javafx" default="netbeans" basedir=".">
     <description>Builds, tests, and runs the project javafx.</description>
-     <property name="javafx20.home" value="C:\Program Files\Oracle\JavaFX 2.0 SDK\rt" /> 
+<!--     <property name="javafx20.home" value="C:\Program Files\Oracle\JavaFX 2.0 SDK\rt" /> -->
+     <property name="javafx20.home" value="/Users/martin/Downloads/javafx-sdk2.0.2-beta/rt" /> 
      
     <import file="nbproject/build-impl.xml"/>
     

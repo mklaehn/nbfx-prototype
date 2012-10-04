@@ -10,7 +10,7 @@
     <import file="nbproject/build-impl.xml"/>
     
     <target name="-pre-compile" depends="init, up-to-date">    
-        <copy toDir="./release/modules/ext/bin">
+<!--        <copy toDir="./release/modules/ext/bin">
             <fileset dir="${javafx20.home}/bin">
                 <include name="*"/>
             </fileset>
@@ -19,7 +19,7 @@
             <fileset dir="${javafx20.home}/lib">
                 <include name="*"/>
             </fileset>
-        </copy>        
+        </copy>        -->
     </target>
     
     <target name="compile" depends="-pre-compile, projectized-common.compile" />

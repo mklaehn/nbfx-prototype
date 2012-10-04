@@ -1,21 +1,20 @@
 /**
  * This file is part of the NBFx.
  *
- * NBFx is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation in version 2 of the License only.
+ * NBFx is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation in version 2 of the License only.
  *
- * NBFx is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * NBFx is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with NBFx. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * NBFx. If not, see <http://www.gnu.org/licenses/>.
  *
  * The NBFx project designates this particular file as subject to the
- * "Classpath" exception as provided by the NBFx Project in the GPL Version 2 section
- * of the License file that accompanied this code.
+ * "Classpath" exception as provided by the NBFx Project in the GPL Version 2
+ * section of the License file that accompanied this code.
  */
 package org.nbfx.util;
 
@@ -34,6 +33,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
 
 /**
@@ -45,20 +45,22 @@ public class NBFxImageUtilities {
     }
 
     public static Image getImage(final Object object) {
-        if (object instanceof Image) {
-            return Image.class.cast(object);
+        if (object instanceof String) {
+            return getImage(ImageUtilities.loadImage((String) object));
+        } else if (object instanceof Image) {
+            return (Image) object;
         } else if (object instanceof ImageIcon) {
-            return getImage(ImageIcon.class.cast(object).getImage());
+            return getImage(((ImageIcon) object).getImage());
         } else if (object instanceof java.awt.Image) {
-            return getImage(java.awt.Image.class.cast(object));
+            return getImage((java.awt.Image) object);
         } else if (object instanceof Icon) {
-            return getImage(Icon.class.cast(object));
+            return getImage((Icon) object);
         } else {
             throw new IllegalArgumentException("Illegal parameter. cannot get Image from it");
         }
     }
 
-    private  static Image getImage(final java.awt.Image image) {
+    private static Image getImage(final java.awt.Image image) {
         final RenderedImage ri = toRenderedImage(image);
 
         try {

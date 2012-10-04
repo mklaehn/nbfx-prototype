@@ -1,21 +1,20 @@
 /**
  * This file is part of the NBFx.
  *
- * NBFx is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation in version 2 of the License only.
+ * NBFx is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation in version 2 of the License only.
  *
- * NBFx is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * NBFx is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with NBFx. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * NBFx. If not, see <http://www.gnu.org/licenses/>.
  *
  * The NBFx project designates this particular file as subject to the
- * "Classpath" exception as provided by the NBFx Project in the GPL Version 2 section
- * of the License file that accompanied this code.
+ * "Classpath" exception as provided by the NBFx Project in the GPL Version 2
+ * section of the License file that accompanied this code.
  */
 package org.nbfx.explorer.view;
 
@@ -45,7 +44,6 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
     private Callback<NodeWrapper, T> representationFactory = null;
     private final ObjectProperty<T> rootNodeProperty = new SimpleObjectProperty<T>(null);
     private final ChangeListener<T> selectionListener = new ChangeListener<T>() {
-
         @Override
         public void changed(final ObservableValue<? extends T> observable, final T oldValue, final T newValue) {
             if (null != getExplorerManager()) {
@@ -56,7 +54,6 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
                         : new Node[]{node};
 
                 NBFxThreadUtilities.SWING.runLater(new Runnable() {
-
                     @Override
                     public void run() {
                         try {
@@ -79,7 +76,13 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
     }
 
     public void setRootNode(final org.openide.nodes.Node node) {
-        setRootNode(new NodeWrapper(node));
+        NBFxThreadUtilities.FX.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                setRootNode(new NodeWrapper(node));
+            }
+        });
     }
 
     public void setRootNode(final NodeWrapper nodeWrapper) {
@@ -185,7 +188,7 @@ public abstract class NodeView<T> extends BorderPane implements ExplorerManager.
         }
 
         private void update(final Node node) {
-            NBFxThreadUtilities.FX.runLater(new RootNodeSetter(nodeView, node));
+            NBFxThreadUtilities.SWING.runLater(new RootNodeSetter(nodeView, node));
         }
     }
 

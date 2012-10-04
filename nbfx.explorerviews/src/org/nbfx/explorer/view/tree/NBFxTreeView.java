@@ -54,15 +54,12 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
 
             @Override
             public TreeCell<Node> call(final TreeView<Node> param) {
-                NBFxThreadUtilities.FX.ensureThread();
                 final TreeCell<Node> cell = new TreeCell<Node>();
 
                 cell.treeItemProperty().addListener(new ChangeListener<TreeItem<Node>>() {
 
                     @Override
                     public void changed(final ObservableValue<? extends TreeItem<Node>> observable, final TreeItem<Node> oldValue, final TreeItem<Node> newValue) {
-                        NBFxThreadUtilities.FX.ensureThread();
-
                         if (null != oldValue) {
                             cell.textProperty().unbind();
                             cell.graphicProperty().unbind();
@@ -81,10 +78,6 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
                         }
                     }
                 });
-
-//                if (cell.getTreeItem() instanceof TreeNodeItem) {
-//                    cell.contextMenuProperty().bind(TreeNodeItem.class.cast(cell.getTreeItem()).contextMenuProperty());
-//                }
 
                 return cell;
             }
@@ -134,7 +127,6 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
 
     public static class TreeNodeItem extends TreeItem<Node> {
 
-        private static final NodeWrapper WAIT_NODE_WRAPPER = new NodeWrapper(createWaitNode());
         private final ObjectConverter<Node, TreeNodeItem> treeNodeItemConverter = new ObjectConverter<Node, TreeNodeItem>() {
 
             @Override
@@ -184,7 +176,7 @@ public final class NBFxTreeView extends NodeView<TreeItem<Node>> {
 
             // leaf
             if (!getValue().isLeaf()) {
-                getChildren().setAll(Collections.singleton(new TreeNodeItem(WAIT_NODE_WRAPPER)));
+                getChildren().setAll(Collections.singleton(new TreeNodeItem(new NodeWrapper(createWaitNode()))));
             }
         }
 

@@ -3,10 +3,10 @@
 <filesystem>
     <folder name="Services">
         <folder name="Browsers">
-            <file name="SwingBrowser.settings_hidden"/>
-            <file name="FxBrowser.settings" url="FxBrowser.xml">
+            <!--<file name="SwingBrowser.settings_hidden"/>-->
+            <file name="FxBrowser.settings" url="NBFxBrowser.xml">
                 <attr name="iconBase" stringvalue="org/openide/resources/html/htmlView.gif"/>
-                <attr name="hidden" boolvalue="true"/>
+                <attr name="hidden" boolvalue="false"/>
                 <attr name="internal" boolvalue="true"/>
                 <attr name="position" intvalue="600"/>
             </file>

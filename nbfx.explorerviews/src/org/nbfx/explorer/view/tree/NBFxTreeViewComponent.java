@@ -37,5 +37,6 @@ public class NBFxTreeViewComponent extends JPanel {
     public void addNotify() {
         super.addNotify();
         view.setExplorerManager(ExplorerManager.find(this));
+        view.requestLayout();
     }
 }

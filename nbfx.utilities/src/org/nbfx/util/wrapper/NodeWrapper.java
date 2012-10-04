@@ -1,21 +1,20 @@
 /**
  * This file is part of the NBFx.
  *
- * NBFx is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation in version 2 of the License only.
+ * NBFx is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation in version 2 of the License only.
  *
- * NBFx is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * NBFx is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with NBFx. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * NBFx. If not, see <http://www.gnu.org/licenses/>.
  *
  * The NBFx project designates this particular file as subject to the
- * "Classpath" exception as provided by the NBFx Project in the GPL Version 2 section
- * of the License file that accompanied this code.
+ * "Classpath" exception as provided by the NBFx Project in the GPL Version 2
+ * section of the License file that accompanied this code.
  */
 package org.nbfx.util.wrapper;
 
@@ -23,6 +22,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.concurrent.Callable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -58,57 +58,80 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
         final ParametrizedPCL ppcl = new ParametrizedPCL();
 
         ppcl.addPropertyChangeListener(Node.PROP_DISPLAY_NAME, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                displayNameProperty().set(node.getDisplayName());
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        displayNameProperty().set(node.getDisplayName());
+                    }
+                });
             }
         });
         ppcl.addPropertyChangeListener(Node.PROP_NAME, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                nameProperty().set(node.getName());
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        nameProperty().set(node.getName());
+                    }
+                });
             }
         });
         ppcl.addPropertyChangeListener(Node.PROP_SHORT_DESCRIPTION, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                shortDescriptionProperty().set(node.getShortDescription());
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        shortDescriptionProperty().set(node.getShortDescription());
+                    }
+                });
             }
         });
         ppcl.addPropertyChangeListener(Node.PROP_ICON, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                nodeIconProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
-                        ? getValue().getIcon(ICON_KEY)
-                        : pce.getNewValue()));
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        nodeIconProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
+                                ? getValue().getIcon(ICON_KEY)
+                                : pce.getNewValue()));
+                    }
+                });
             }
         });
         ppcl.addPropertyChangeListener(Node.PROP_LEAF, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                childNodes.setAll(Collections.<Node>emptyList());
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        childNodes.setAll(Collections.<Node>emptyList());
+                    }
+                });
             }
         });
         ppcl.addPropertyChangeListener(Node.PROP_OPENED_ICON, new PropertyChangeListener() {
-
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                nodeIconOpenedProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
-                        ? getValue().getOpenedIcon(ICON_KEY)
-                        : pce.getNewValue()));
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        nodeIconOpenedProperty().set(NBFxImageUtilities.getImage((null == pce.getNewValue())
+                                ? getValue().getOpenedIcon(ICON_KEY)
+                                : pce.getNewValue()));
+                    }
+                });
             }
         });
 
         node.addNodeListener(new NodeListener() {
-
             @Override
             public void childrenAdded(final NodeMemberEvent nme) {
-                NBFxThreadUtilities.SWING.ensureThread();
+                NBFxThreadUtilities.SWING.runLater(null);
                 childNodes.setAll(nme.getSnapshot());
             }
 
@@ -156,19 +179,15 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     }
 
     public final void addNotify() {
-        RP.post(new Runnable() {
-
+        NBFxThreadUtilities.RP.post(new Callable<Node[]>() {
             @Override
-            public void run() {
-                final Node[] nodes = getValue().getChildren().getNodes();
-
-                NBFxThreadUtilities.FX.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        childNodes.setAll(nodes);
-                    }
-                });
+            public Node[] call() throws Exception {
+                return getValue().getChildren().getNodes();
+            }
+        }, new NBFxThreadUtilities.FinishedRunnable<Node[]>() {
+            @Override
+            public void finished(final Node[] t) {
+                childNodes.setAll(t);
             }
         });
     }
@@ -178,16 +197,24 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
     }
 
     private void updateContextMenu() {
-        NBFxThreadUtilities.SWING.ensureThread();
-        final MenuItem[] menuItems = NBFxActionUtilities.convertMenuItems(getValue().getLookup(), getValue().getActions(true));
-
-        NBFxThreadUtilities.FX.runLater(new Runnable() {
-
+        NBFxThreadUtilities.SWING.post(new Callable<MenuItem[]>() {
             @Override
-            public void run() {
-                if ((null != menuItems) && (0 != menuItems.length)) {
-                    contextMenuProperty.set(new ContextMenu(menuItems));
-                }
+            public MenuItem[] call() throws Exception {
+                return NBFxActionUtilities.convertMenuItems(NodeWrapper.this.getValue().getLookup(), NodeWrapper.this.getValue().getActions(true));
+            }
+        }, new NBFxThreadUtilities.FinishedRunnable<MenuItem[]>() {
+            @Override
+            public void finished(final MenuItem[] menuItems) {
+                NBFxThreadUtilities.FX.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if ((null != menuItems) && (0 != menuItems.length)) {
+                            contextMenuProperty.set(new ContextMenu(menuItems));
+                        } else {
+                            contextMenuProperty.set(null);
+                        }
+                    }
+                });
             }
         });
     }

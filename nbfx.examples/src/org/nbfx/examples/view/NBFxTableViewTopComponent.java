@@ -48,7 +48,7 @@ public final class NBFxTableViewTopComponent extends NBFxSelectionAwareTopCompon
 
         table.setTableMenuButtonVisible(true);
         table.setColumns(
-                new NBFxTableView.TableColumnDefinition<String>("Name", "name", String.class),
+                new NBFxTableView.TableColumnDefinition<String>("Title", "Title", String.class),
                 new NBFxTableView.TableColumnDefinition<String>("Location", "Location", String.class));
 
         this.add(table, BorderLayout.CENTER);

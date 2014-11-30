@@ -34,9 +34,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFieldBuilder;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderPaneBuilder;
 import javax.swing.JPanel;
 import org.nbfx.util.NBFxPanelCreator;
 import org.nbfx.util.NBFxThreadUtilities;
@@ -58,16 +56,22 @@ final public class FxIconView extends JPanel implements PropertyChangeListener {
         super(new BorderLayout());
         NBFxThreadUtilities.SWING.ensureThread();
 
-        final TextField input = TextFieldBuilder.create().
-                promptText("<put your folder here>").
-                build();
-        final BorderPane borderPane = BorderPaneBuilder.create().
-                top(input).
-                build();
+        final TextField input = new TextField();
+        input.setPromptText("<put your folder here>");
+        
+        final BorderPane borderPane = new BorderPane();
+        borderPane.setTop(input);
+
         final JFXPanel panel = NBFxPanelCreator.create(borderPane);
 
         add(panel, BorderLayout.CENTER);
-        panel.getScene().getStylesheets().add("/org/nbfx/explorer/view/displayshelf.css");
+        NBFxThreadUtilities.FX.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                panel.getScene().getStylesheets().add("/org/nbfx/explorer/view/displayshelf.css");
+            }
+        });
         input.setOnAction(new InputHandler(this, borderPane, input));
     }
 

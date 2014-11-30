@@ -24,7 +24,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.CheckBoxBuilder;
 import org.openide.nodes.Node.Property;
 
 public class NBFxBooleanNodeProperty extends SimpleBooleanProperty implements NBFxNodeProperty<Boolean> {
@@ -67,9 +66,10 @@ public class NBFxBooleanNodeProperty extends SimpleBooleanProperty implements NB
     @Override
     public Node getRenderer() {
         if (canRead() || canWrite()) {
-            final CheckBox checkBox = CheckBoxBuilder.create().
-                    disable(!canWrite()).
-                    selected((null == getValue()) ? false : getValue()).build();
+            final CheckBox checkBox = new CheckBox();
+            
+            checkBox.setDisable(!canWrite());
+            checkBox.setSelected((null == getValue()) ? false : getValue());
 
             if (canWrite()) {
                 checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {

@@ -26,25 +26,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ChoiceBoxBuilder;
 import org.openide.nodes.Node.Property;
 
-public class NBFxEnumNodeProperty extends SimpleObjectProperty<Enum<?>> implements NBFxNodeProperty<Enum<?>> {
+public class NBFxEnumNodeProperty<E extends Enum<?>> extends SimpleObjectProperty<E> implements NBFxNodeProperty<E> {
 
-    public NBFxEnumNodeProperty(final Property<Enum<?>> nodeProperty) {
+    public NBFxEnumNodeProperty(final Property<E> nodeProperty) {
         super(nodeProperty, nodeProperty.getDisplayName());
         fireValueChangedEvent();
     }
 
     @Override
-    public Enum<?> getValue() {
+    public E getValue() {
         return canRead()
                 ? NBFxNodePropertyUtility.getValue(getNodeProperty())
                 : null;
     }
 
     @Override
-    public final void setValue(final Enum<?> newValue) {
+    public final void setValue(final E newValue) {
         if (canWrite() && NBFxNodePropertyUtility.setValue(getNodeProperty(), newValue)) {
             fireValueChangedEvent();
         }
@@ -60,43 +59,45 @@ public class NBFxEnumNodeProperty extends SimpleObjectProperty<Enum<?>> implemen
         return getNodeProperty().canWrite();
     }
 
-    private Property<Enum<?>> getNodeProperty() {
+    private Property<E> getNodeProperty() {
         @SuppressWarnings("unchecked")
-        final Property<Enum<?>> prop = (Property<Enum<?>>) getBean();
+        final Property<E> prop = (Property<E>) getBean();
         return prop;
     }
 
     @Override
     public Node getRenderer() {
         if (canRead() || canWrite()) {
-            final ObservableList<Enum<?>> enums;
+            final ObservableList<E> enums;
 
             if (null != getValue()) {
                 @SuppressWarnings("unchecked")
-                final Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) getValue().getClass();
-                enums = FXCollections.observableArrayList(enumClass.getEnumConstants());
-            } else if (getNodeProperty().getValueType().isEnum()) {
-                enums = FXCollections.observableArrayList(getNodeProperty().getValueType().getEnumConstants());
+                final Class<E> enumClass = (Class<E>) getValue().getClass();
+                 enums = FXCollections.observableArrayList(enumClass.getEnumConstants());
+             } else if (getNodeProperty().getValueType().isEnum()) {
+                 enums = FXCollections.observableArrayList(getNodeProperty().getValueType().getEnumConstants());
             } else {
                 return null;
             }
 
-            final ChoiceBox<Enum<?>> choiceBox = ChoiceBoxBuilder.<Enum<?>>create().disable(!canWrite()).items(enums).build();
+            final ChoiceBox<E> choiceBox = new ChoiceBox<E>(enums);
+            
+            choiceBox.setDisable(!canWrite());
 
             if (canWrite()) {
-                choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Enum<?>>() {
+                choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<E>() {
 
                     @Override
-                    public void changed(final ObservableValue<? extends Enum<?>> observable, final Enum<?> oldValue, final Enum<?> newValue) {
+                    public void changed(final ObservableValue<? extends E> observable, final E oldValue, final E newValue) {
                         setValue(newValue);
                     }
                 });
             }
 
-            addListener(new ChangeListener<Enum<?>>() {
+            addListener(new ChangeListener<E>() {
 
                 @Override
-                public void changed(ObservableValue<? extends Enum<?>> observable, Enum<?> oldValue, Enum<?> newValue) {
+                public void changed(ObservableValue<? extends E> observable, E oldValue, E newValue) {
                     choiceBox.getSelectionModel().select(newValue);
                 }
             });

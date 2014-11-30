@@ -131,7 +131,13 @@ public class NBFxTableView extends NodeView<NodeWrapper> {
     }
 
     public final void setTableMenuButtonVisible(final boolean visible) {
-        tableView.setTableMenuButtonVisible(visible);
+        NBFxThreadUtilities.FX.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                tableView.setTableMenuButtonVisible(visible);
+            }
+        });
     }
 
     public static class TableColumnDefinition<D> extends TableColumn<NodeWrapper, D> {

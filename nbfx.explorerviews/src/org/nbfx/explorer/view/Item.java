@@ -36,9 +36,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.effect.PerspectiveTransform;
-import javafx.scene.effect.ReflectionBuilder;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageViewBuilder;
+import javafx.scene.image.ImageView;
 
 public class Item extends Parent {
 
@@ -56,10 +56,12 @@ public class Item extends Parent {
 
         // create content
         setEffect(transform);
-        getChildren().addAll(ImageViewBuilder.create().
-                image(new Image(url.toExternalForm(), true)).
-                effect(ReflectionBuilder.create().fraction(REFLECTION_SIZE).build()).
-                build());
+        
+        final ImageView imageView = new ImageView(new Image(url.toExternalForm(), true));
+        final Reflection reflection = new Reflection();
+        reflection.setFraction(REFLECTION_SIZE);
+        imageView.setEffect(reflection);
+        getChildren().addAll(imageView);
         angle.addListener(new InvalidationListener() {
 
             @Override

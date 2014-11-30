@@ -20,6 +20,8 @@
 package org.nbfx.explorer.view.table;
 
 import java.awt.BorderLayout;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
 import org.nbfx.explorer.view.table.NBFxTableView.TableColumnDefinition;
 import org.nbfx.util.NBFxPanelCreator;
@@ -28,10 +30,25 @@ import org.openide.explorer.ExplorerManager;
 
 public class NBFxTableViewComponent extends JPanel {
 
-    private final NBFxTableView view = new NBFxTableView();
+    private final NBFxTableView view;
 
     public NBFxTableViewComponent() {
         super(new BorderLayout());
+
+        try {
+            view = NBFxThreadUtilities.FX.post(new Callable<NBFxTableView>() {
+
+                @Override
+                public NBFxTableView call() throws Exception {
+                    return new NBFxTableView();
+                }
+            }).get();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException("view is required", ex);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException("view is required", ex);
+        }
+
         add(NBFxPanelCreator.create(view), BorderLayout.CENTER);
     }
 

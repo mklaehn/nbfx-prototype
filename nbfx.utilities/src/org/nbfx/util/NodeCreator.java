@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.Parameters;
 
@@ -71,7 +70,7 @@ final class NodeCreator {
 
         @Override
         public Scene create() {
-            return SceneBuilder.create().root(rootNode).build();
+            return new Scene(rootNode);
         }
     }
 

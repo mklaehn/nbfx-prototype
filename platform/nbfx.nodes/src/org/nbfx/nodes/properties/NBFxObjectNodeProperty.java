@@ -24,7 +24,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.LabelBuilder;
 import org.openide.nodes.Node.Property;
 
 public class NBFxObjectNodeProperty<T> extends SimpleObjectProperty<T> implements NBFxNodeProperty<T> {
@@ -67,10 +66,9 @@ public class NBFxObjectNodeProperty<T> extends SimpleObjectProperty<T> implement
     @Override
     public Node getRenderer() {
         if (canRead() || canWrite()) {
-            final Label label = LabelBuilder.create().
-                    disable(true).
-                    text((null == getValue()) ? null : getValue().toString()).
-                    build();
+            final Label label = new Label((null == getValue()) ? null : getValue().toString());
+            
+            label.setDisable(true);
 
             addListener(new ChangeListener<T>() {
 

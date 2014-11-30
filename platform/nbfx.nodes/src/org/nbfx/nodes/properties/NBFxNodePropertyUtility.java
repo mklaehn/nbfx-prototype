@@ -65,40 +65,35 @@ public final class NBFxNodePropertyUtility {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> NBFxNodeProperty<?> createNBFxNodeProperty(final org.openide.nodes.Node.Property<T> nodeProperty) {
         Parameters.notNull("nodeProperty", nodeProperty);
         final Class<T> valueType = nodeProperty.getValueType();
 
         if (Boolean.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Boolean> prop = (org.openide.nodes.Node.Property<Boolean>) nodeProperty;
             return new NBFxBooleanNodeProperty(prop);
         } else if (Enum.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Enum<?>> prop = (org.openide.nodes.Node.Property<Enum<?>>) nodeProperty;
-            return new NBFxEnumNodeProperty(prop);
+            @SuppressWarnings("rawtypes")
+            final NBFxEnumNodeProperty nbFxEnumNodeProperty = new NBFxEnumNodeProperty(prop);
+            return nbFxEnumNodeProperty;
         } else if (Short.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Short> prop = (org.openide.nodes.Node.Property<Short>) nodeProperty;
             return new NBFxShortNodeProperty(prop);
         } else if (Integer.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Integer> prop = (org.openide.nodes.Node.Property<Integer>) nodeProperty;
             return new NBFxIntegerNodeProperty(prop);
         } else if (Long.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Long> prop = (org.openide.nodes.Node.Property<Long>) nodeProperty;
             return new NBFxLongNodeProperty(prop);
         } else if (Float.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Float> prop = (org.openide.nodes.Node.Property<Float>) nodeProperty;
             return new NBFxFloatNodeProperty(prop);
         } else if (Double.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<Double> prop = (org.openide.nodes.Node.Property<Double>) nodeProperty;
             return new NBFxDoubleNodeProperty(prop);
         } else if (String.class.isAssignableFrom(valueType)) {
-            @SuppressWarnings("unchecked")
             final org.openide.nodes.Node.Property<String> prop = (org.openide.nodes.Node.Property<String>) nodeProperty;
             return new NBFxStringNodeProperty(prop);
         } else {

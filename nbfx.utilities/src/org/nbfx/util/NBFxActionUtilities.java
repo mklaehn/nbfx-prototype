@@ -25,11 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.CheckMenuItemBuilder;
-import javafx.scene.control.MenuBuilder;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.MenuItemBuilder;
-import javafx.scene.control.RadioMenuItemBuilder;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -126,13 +124,13 @@ public class NBFxActionUtilities {
                     ? String.class.cast(action.getValue(Action.NAME))
                     : String.class.cast(action.getValue(Action.SHORT_DESCRIPTION));
             final String id = String.class.cast(action.getValue(Action.ACTION_COMMAND_KEY));
+            final MenuItem menuItem = new MenuItem(name);
 
-            return Collections.singletonList(MenuItemBuilder.create().
-                    id(id).
-                    text(name).
-                    disable(!action.isEnabled()).
-                    onAction(new ActionEventHandler(action, action, id)).
-                    build());
+            menuItem.setId(id);
+            menuItem.setDisable(!action.isEnabled());
+            menuItem.setOnAction(new ActionEventHandler(action, action, id));
+
+            return Collections.singletonList(menuItem);
         } else if (object instanceof JMenuItem) {
             final JMenuItem jmi = JMenuItem.class.cast(object);
 
@@ -165,22 +163,31 @@ public class NBFxActionUtilities {
         public MenuItem convertJMenuItem(final JMenuItem jmi) {
             final String name = jmi.getText();
             final String id = jmi.getActionCommand();
-            final MenuItemBuilder<?> mib;
+            final MenuItem menuItem;
 
             if (jmi instanceof JMenu) {
-                mib = MenuBuilder.create();
+                menuItem = new MenuItem();
             } else if (jmi instanceof JCheckBoxMenuItem) {
-                mib = CheckMenuItemBuilder.create().selected(JCheckBoxMenuItem.class.cast(jmi).isSelected());
+                final CheckMenuItem checkMenuItem = new CheckMenuItem();
+
+                checkMenuItem.setSelected(JCheckBoxMenuItem.class.cast(jmi).isSelected());
+
+                menuItem = checkMenuItem;
             } else if (jmi instanceof JRadioButtonMenuItem) {
-                mib = RadioMenuItemBuilder.create().selected(JRadioButtonMenuItem.class.cast(jmi).isSelected());
+                final RadioMenuItem radioMenuItem = new RadioMenuItem();
+
+                radioMenuItem.setSelected(JRadioButtonMenuItem.class.cast(jmi).isSelected());
+
+                menuItem = radioMenuItem;
             } else {
-                mib = MenuItemBuilder.create();
+                menuItem = new MenuItem();
             }
 
-            return mib.text(name).
-                    id(id).
-                    onAction(new ActionEventHandler(new AbstractButtonActionMediator(jmi), jmi, id)).
-                    build();
+            menuItem.setText(name);
+            menuItem.setId(id);
+            menuItem.setOnAction(new ActionEventHandler(new AbstractButtonActionMediator(jmi), jmi, id));
+
+            return menuItem;
         }
     }
 

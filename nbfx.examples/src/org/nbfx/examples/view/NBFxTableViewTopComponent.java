@@ -20,10 +20,14 @@
 package org.nbfx.examples.view;
 
 import java.awt.BorderLayout;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import org.nbfx.explorer.view.table.NBFxTableView;
 import org.nbfx.explorer.view.table.NBFxTableViewComponent;
+import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -45,7 +49,7 @@ public final class NBFxTableViewTopComponent extends NBFxSelectionAwareTopCompon
         setToolTipText(Bundle.HINT_NBFxTableViewTopComponent());
 
         final NBFxTableViewComponent table = new NBFxTableViewComponent();
-
+        
         table.setTableMenuButtonVisible(true);
         table.setColumns(
                 new NBFxTableView.TableColumnDefinition<String>("Title", "Title", String.class),

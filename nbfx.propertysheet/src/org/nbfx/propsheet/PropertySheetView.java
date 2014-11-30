@@ -26,7 +26,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.LabelBuilder;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import org.nbfx.util.property.NBFxNodeProperty;
@@ -60,7 +59,7 @@ public class PropertySheetView extends GridPane {
                     continue;
                 }
 
-                final Label sheetTitle = LabelBuilder.create().text(entry.getKey()).build();
+                final Label sheetTitle = new Label(entry.getKey());
 
                 sheetTitle.getStyleClass().add("property-sheet-header");
 
@@ -76,7 +75,9 @@ public class PropertySheetView extends GridPane {
                 row++;
 
                 for (final NBFxNodeProperty<?> nbfnp : entry.getValue()) {
-                    addNode(LabelBuilder.create().text(nbfnp.getName()).alignment(Pos.CENTER_RIGHT).build(),
+                    final Label label = new Label(nbfnp.getName());
+                    label.setAlignment(Pos.CENTER_RIGHT);
+                    addNode(label,
                             0,
                             row,
                             1,

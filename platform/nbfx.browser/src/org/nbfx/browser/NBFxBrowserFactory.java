@@ -18,6 +18,7 @@
  */
 package org.nbfx.browser;
 
+import java.awt.Component;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -108,10 +109,10 @@ public final class NBFxBrowserFactory implements HtmlBrowser.Factory {
 
         private class FirePCEListener implements InvalidationListener {
 
-            private final AbstractHtmlBrowserImpl impl;
+            private final AbstractHtmlBrowserImpl<? extends Component> impl;
             private final String propertyName;
 
-            public FirePCEListener(final AbstractHtmlBrowserImpl impl, final String propertyName) {
+            public FirePCEListener(final AbstractHtmlBrowserImpl<? extends Component> impl, final String propertyName) {
                 this.impl = impl;
                 this.propertyName = propertyName;
             }

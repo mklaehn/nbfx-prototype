@@ -22,14 +22,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.JFXPanel;
-import javafx.embed.swing.JFXPanelBuilder;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.scene.paint.Paint;
 import org.nbfx.core.util.NBFxUtilities;
 
@@ -87,42 +85,33 @@ public final class NBFxPanelBuilder {
     public JFXPanel build() {
         NBFxUtilities.SWING.ensureThread();
 
-        return JFXPanelBuilder.create().
-                scene(NBFxUtilities.FX.get(new Callable<Scene>() {
+        final JFXPanel jfxp = new JFXPanel();
+
+        jfxp.setScene(NBFxUtilities.FX.get(new Callable<Scene>() {
 
             @Override
             public Scene call() throws Exception {
-                final SceneBuilder<?> builder = SceneBuilder.create();
+                final Parent parent = (Parent) Objects.requireNonNull(values.get(Key.ROOT), "A Scene requires a Parent!");
+                final Scene scene = new Scene(parent);
 
-                for (final Map.Entry<Key, Object> entry : values.entrySet()) {
-                    switch (entry.getKey()) {
-                        case FILL:
-                            builder.fill(Paint.class.cast(entry.getValue()));
-                            break;
-                        case ROOT:
-                            builder.root(Parent.class.cast(entry.getValue()));
-                            break;
-                        case ADDITIONAL_STYLES:
-                            // handled after the creation
-                            break;
-                        default:
-                            LOG.log(Level.INFO, "Key {0} not supported!", entry.getKey());
-                            break;
-                    }
+                if (values.containsKey(Key.FILL)) {
+                    final Paint paint = (Paint) values.get(Key.FILL);
+
+                    scene.setFill(paint);
                 }
-
-                final Scene s = builder.build();
 
                 if (values.get(Key.ADDITIONAL_STYLES) instanceof List) {
                     @SuppressWarnings("unchecked")
                     final List<String> list = (List<String>) values.get(Key.ADDITIONAL_STYLES);
 
-                    s.getStylesheets().addAll(list);
+                    scene.getStylesheets().addAll(list);
                 }
 
-                return s;
+                return scene;
             }
-        })).build();
+        }));
+
+        return jfxp;
     }
 
     private static enum Key {

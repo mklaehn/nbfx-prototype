@@ -23,9 +23,8 @@ import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import javafx.concurrent.Task;
-import javafx.embed.swing.JFXPanelBuilder;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.scene.paint.Color;
 import javax.swing.JPanel;
 import org.nbfx.util.NBFxThreadUtilities;
@@ -39,21 +38,27 @@ public final class NBFxUrlDisplayPanel extends JPanel {
         final Task<WebBrowser> browserTask = NBFxThreadUtilities.FX.post(new Callable<WebBrowser>() {
             @Override
             public WebBrowser call() throws Exception {
-                return new WebBrowser("http://www.newbeans.org");
+                return new WebBrowser("http://www.netbeans.org");
             }
         });
         final Task<Scene> sceneTask = NBFxThreadUtilities.FX.post(new Callable<Scene>() {
             @Override
             public Scene call() throws Exception {
-                return SceneBuilder.create().root(browserTask.get().getNode()).fill(Color.BLACK).build();
+                final Scene scene = new Scene(browserTask.get().getNode());
+                
+                scene.setFill(Color.BLACK);
+                
+                return scene;
             }
         });
 
         try {
             browser = browserTask.get();
-            add(JFXPanelBuilder.
-                    create().
-                    scene(sceneTask.get()).build(), BorderLayout.CENTER);
+            final  JFXPanel jfxp = new JFXPanel();
+            
+            jfxp.setScene(sceneTask.get());
+            
+            add(jfxp, BorderLayout.CENTER);
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         } catch (ExecutionException ex) {

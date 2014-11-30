@@ -22,9 +22,7 @@ package org.nbfx.propsheet;
 import java.awt.BorderLayout;
 import java.util.Collection;
 import javafx.embed.swing.JFXPanel;
-import javafx.embed.swing.JFXPanelBuilder;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.paint.Color;
 import org.nbfx.util.NBFxThreadUtilities;
@@ -101,14 +99,11 @@ public final class NBFxPropertySheetTopComponent extends TopComponent {
 
             @Override
             public void run() {
-                final Scene scene = SceneBuilder.create().
-                        fill(Color.BLACK).
-                        root(propertiesScrollPane).
-                        stylesheets("/org/nbfx/propsheet/propsheet.css").
-                        build();
-                final JFXPanel panel = JFXPanelBuilder.create().
-                        scene(scene).
-                        build();
+                final Scene scene = new Scene(propertiesScrollPane);
+                scene.setFill(Color.BLACK);
+                scene.getStylesheets().setAll("/org/nbfx/propsheet/propsheet.css");
+                final JFXPanel panel = new JFXPanel();
+                panel.setScene(scene);
 
                 NBFxThreadUtilities.SWING.runLater(new Runnable() {
 

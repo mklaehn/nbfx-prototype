@@ -24,7 +24,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFieldBuilder;
 import org.openide.nodes.Node.Property;
 
 public class NBFxDoubleNodeProperty extends SimpleDoubleProperty implements NBFxNodeProperty<Number> {
@@ -69,10 +68,9 @@ public class NBFxDoubleNodeProperty extends SimpleDoubleProperty implements NBFx
     @Override
     public Node getRenderer() {
         if (canRead() || canWrite()) {
-            final TextField textField = TextFieldBuilder.create().
-                    editable(canWrite()).
-                    text((null == getValue()) ? "" : getValue().toString()).
-                    build();
+            final TextField textField = new TextField((null == getValue()) ? "" : getValue().toString());
+            
+            textField.setEditable(canWrite());
 
             if (canWrite()) {
                 textField.textProperty().addListener(new ChangeListener<String>() {

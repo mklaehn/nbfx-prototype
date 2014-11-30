@@ -8,10 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBuilder;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
-import javafx.scene.control.SplitMenuButtonBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
@@ -40,22 +38,22 @@ public class WebBrowser {
         }
 
         web.getEngine().loadContent("<html><body><h1>No data</h1></body></html>");
-        final SplitMenuButton backButton = SplitMenuButtonBuilder.create().
-                graphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/back.png"))).
-                build();
-        final SplitMenuButton forwardButton = SplitMenuButtonBuilder.create().
-                graphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/forward.png"))).
-                build();
-        final Button homeButton = ButtonBuilder.create().
-                graphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/home.png"))).
-                onAction(new EventHandler<ActionEvent>() {
+        final SplitMenuButton backButton = new SplitMenuButton();
+        backButton.setGraphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/back.png")));
+
+        final SplitMenuButton forwardButton = new SplitMenuButton();
+        forwardButton.setGraphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/forward.png")));
+
+        final Button homeButton = new Button();
+        homeButton.setGraphic(new ImageView(NBFxImageUtilities.getImage("org/nbfx/browser/resources/home.png")));
+        homeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 location.setText(getHome());
                 web.getEngine().load(getHome());
                 web.requestFocus();
             }
-        }).build();
+        });
 
         web.getEngine().getHistory().currentIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -103,19 +101,23 @@ public class WebBrowser {
         web.setOnZoom(new EventHandler<ZoomEvent>() {
             @Override
             public void handle(ZoomEvent t) {
-                web.impl_setScale(web.impl_getScale() * t.getZoomFactor());
+                web.setScaleX(web.getScaleX() * t.getZoomFactor());
+                web.setScaleY(web.getScaleY() * t.getZoomFactor());
             }
         });
         web.setOnKeyTyped(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent t) {
                 if (t.isMetaDown() && t.getCharacter().equals("0")) {
-                    web.impl_setScale(1);
+                    web.setScaleX(1);
+                    web.setScaleY(1);
                 } else if (t.isMetaDown() && t.getCharacter().equals("+")) {
-                    web.impl_setScale(web.impl_getScale() * 1.1);
+                    web.setScaleX(web.getScaleX() * 1.1);
+                    web.setScaleY(web.getScaleY() * 1.1);
                 }
                 if (t.isMetaDown() && t.getCharacter().equals("-")) {
-                    web.impl_setScale(web.impl_getScale() * 0.9);
+                    web.setScaleX(web.getScaleX() * 0.9);
+                    web.setScaleY(web.getScaleY() * 0.9);
                 }
             }
         });

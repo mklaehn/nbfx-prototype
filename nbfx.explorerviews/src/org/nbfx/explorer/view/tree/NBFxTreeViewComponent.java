@@ -20,16 +20,34 @@
 package org.nbfx.explorer.view.tree;
 
 import java.awt.BorderLayout;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
 import org.nbfx.util.NBFxPanelCreator;
+import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.explorer.ExplorerManager;
 
 public class NBFxTreeViewComponent extends JPanel {
 
-    private final NBFxTreeView view = new NBFxTreeView();
+    private final NBFxTreeView view;
 
     public NBFxTreeViewComponent() {
         super(new BorderLayout());
+        
+        try {
+            view = NBFxThreadUtilities.FX.post(new Callable<NBFxTreeView>() {
+
+                @Override
+                public NBFxTreeView call() throws Exception {
+                    return new NBFxTreeView();
+                }
+            }).get();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException("view is required", ex);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException("view is required", ex);
+        }
+
         add(NBFxPanelCreator.create(view), BorderLayout.CENTER);
     }
 

@@ -36,6 +36,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JPanel;
+import org.nbfx.util.NBFxPanelBuilder;
 import org.nbfx.util.NBFxPanelCreator;
 import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.nodes.AbstractNode;
@@ -62,16 +63,12 @@ final public class FxIconView extends JPanel implements PropertyChangeListener {
         final BorderPane borderPane = new BorderPane();
         borderPane.setTop(input);
 
-        final JFXPanel panel = NBFxPanelCreator.create(borderPane);
-
+        final JFXPanel panel = NBFxPanelBuilder.create()
+                .root(borderPane)
+                .additionalStyle("/org/nbfx/explorer/view/displayshelf.css")
+                .build();
+        
         add(panel, BorderLayout.CENTER);
-        NBFxThreadUtilities.FX.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                panel.getScene().getStylesheets().add("/org/nbfx/explorer/view/displayshelf.css");
-            }
-        });
         input.setOnAction(new InputHandler(this, borderPane, input));
     }
 

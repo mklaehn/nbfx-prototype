@@ -19,7 +19,6 @@
 package org.nbfx.examples.view;
 
 import java.awt.BorderLayout;
-import org.nbfx.examples.node.MyNode;
 import org.nbfx.explorer.view.tree.NBFxTreeViewComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -48,7 +47,7 @@ public final class NBFxTreeViewTopComponent extends TopComponent implements Expl
         setToolTipText(Bundle.HINT_NBFxTreeViewTopComponent());
 
         associateLookup(ExplorerUtils.createLookup(manager, getActionMap()));
-        manager.setRootContext(new MyNode());
+        manager.setRootContext(new OrbitRootNode());
 
         this.add(new NBFxTreeViewComponent(), BorderLayout.CENTER);
     }

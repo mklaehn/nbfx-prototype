@@ -21,10 +21,11 @@ package org.nbfx.propsheet;
 
 import java.awt.BorderLayout;
 import java.util.Collection;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.paint.Color;
+import org.nbfx.util.NBFxPanelBuilder;
 import org.nbfx.util.NBFxThreadUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -51,7 +52,7 @@ public final class NBFxPropertySheetTopComponent extends TopComponent {
 
     private static final RequestProcessor RP = new RequestProcessor(NBFxPropertySheetTopComponent.class.getSimpleName(), 2);
     private final Lookup.Result<Node> lookupResult = Utilities.actionsGlobalContext().lookupResult(Node.class);
-    private final ScrollPane propertiesScrollPane = new ScrollPane();
+    private final ScrollPane propertiesScrollPane;
     private final LookupListener lookupListener = new LookupListener() {
 
         @Override
@@ -95,25 +96,24 @@ public final class NBFxPropertySheetTopComponent extends TopComponent {
         setName(Bundle.CTL_NBFxPropSheetTopComponent());
         setToolTipText(Bundle.HINT_NBFxPropSheetTopComponent());
 
-        NBFxThreadUtilities.FX.runLater(new Runnable() {
+        try {
+            propertiesScrollPane = NBFxThreadUtilities.FX.post(new Callable<ScrollPane>() {
+                
+                @Override
+                public ScrollPane call() throws Exception {
+                    return new ScrollPane();
+                }
+            }).get();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException("view is required", ex);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException("view is required", ex);
+        }
 
-            @Override
-            public void run() {
-                final Scene scene = new Scene(propertiesScrollPane);
-                scene.setFill(Color.BLACK);
-                scene.getStylesheets().setAll("/org/nbfx/propsheet/propsheet.css");
-                final JFXPanel panel = new JFXPanel();
-                panel.setScene(scene);
-
-                NBFxThreadUtilities.SWING.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        add(panel, BorderLayout.CENTER);
-                    }
-                });
-            }
-        });
+        add(NBFxPanelBuilder.create()
+                .root(propertiesScrollPane)
+                .fill(Color.BLACK)
+                .additionalStyle("/org/nbfx/propsheet/propsheet.css").build(), BorderLayout.CENTER);
     }
 
     @Override

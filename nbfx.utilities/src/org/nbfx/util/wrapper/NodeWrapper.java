@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.concurrent.Callable;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -131,30 +132,30 @@ public class NodeWrapper extends FeatureDescriptorWrapper<Node> {
         node.addNodeListener(new NodeListener() {
             @Override
             public void childrenAdded(final NodeMemberEvent nme) {
-                NBFxThreadUtilities.SWING.runLater(null);
-                childNodes.setAll(nme.getSnapshot());
+//                NBFxThreadUtilities.SWING.runLater(null);
+                Platform.runLater(() -> childNodes.setAll(nme.getSnapshot()));
             }
 
             @Override
             public void childrenRemoved(final NodeMemberEvent nme) {
-                NBFxThreadUtilities.SWING.ensureThread();
-                childNodes.setAll(nme.getSnapshot());
+//                NBFxThreadUtilities.SWING.ensureThread();
+                Platform.runLater(() -> childNodes.setAll(nme.getSnapshot()));
             }
 
             @Override
             public void childrenReordered(final NodeReorderEvent nre) {
-                NBFxThreadUtilities.SWING.ensureThread();
-                childNodes.setAll(nre.getSnapshot());
+//                NBFxThreadUtilities.SWING.ensureThread();
+                Platform.runLater(() -> childNodes.setAll(nre.getSnapshot()));
             }
 
             @Override
             public void nodeDestroyed(final NodeEvent ne) {
-                NBFxThreadUtilities.SWING.ensureThread();
+//                NBFxThreadUtilities.SWING.ensureThread();
             }
 
             @Override
             public void propertyChange(final PropertyChangeEvent pce) {
-                NBFxThreadUtilities.SWING.ensureThread();
+//                NBFxThreadUtilities.SWING.ensureThread();
 
                 ppcl.propertyChange(pce);
                 updateContextMenu();
